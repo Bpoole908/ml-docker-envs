@@ -1,7 +1,7 @@
 # Getting Started
 The GPU Docker environment has two requirements: 1) you will need to use a version of Linux where docker-gpu is supported 2) You need to have a GPU and the latest Nvidia drivers installed. If you meet these requirements then you can use the Docker environment within `gpu/`. Otherwise, you should stick to using the `no-gpu/` Docker environment. Additionally, if you are not using Linux you might not be able to use to `env.sh` scripts.
 
-The GPU environment image `bpoole908/mlenv-gpu:latest` can be pulled directly from Docker or can be found [here](). Likewise, the non-GPU environment image `bpoole908/mlenv:latest` can be pulled directly from Docker or can be found [here](https://hub.docker.com/repository/docker/bpoole908/mlenv).
+The GPU environment image `bpoole908/mlenv-gpu:latest` can be pulled directly from Docker or can be found [here](https://hub.docker.com/repository/docker/bpoole908/mlenv-gpu). Likewise, the non-GPU environment image `bpoole908/mlenv:latest` can be pulled directly from Docker or can be found [here](https://hub.docker.com/repository/docker/bpoole908/mlenv).
 
 *Note, that all Docker environments here require code to be mounted into them!*
 
