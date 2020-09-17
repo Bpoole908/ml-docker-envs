@@ -15,18 +15,19 @@ ARG HOST_GID="100"
 ENV HOME=/home/${HOST_USER} \
     MINICONDA_VERSION=4.6.14 \
     CONDA_VERSION=4.6.14 \
-    CONDA_DIR=/home/$HOST_USER/miniconda
+    CONDA_DIR=/home/$HOST_USER/miniconda \
+    USER=$HOST_USER \
+    UID=$HOST_UID \ 
+    GID=$HOST_GID
 
 # PATH must have be on its own line or CONDA_DIR will not be recognized
 ENV PATH=${CONDA_DIR}/bin:${HOME}/.local/bin:${PATH}
 
 RUN groupadd -r ${HOST_USER} \
-    && useradd -d /home/${HOST_USER} -g $HOST_GID -m -r -u ${HOST_UID} ${HOST_USER} \
-    && mkdir ${HOME}/mnt/ \
-    && chown ${HOST_USER}:${HOST_GID} ${HOME}/mnt/
+    && useradd -d /home/${HOST_USER} -g ${HOST_GID} -m -r -u ${HOST_UID} ${HOST_USER} \
+    && mkdir ${HOME}/mnt/ 
 
-# Designated mount point inside the contianer for mounting volumes from host PC
-WORKDIR /home/${HOST_USER}/mnt
+COPY ./pip_requirements.txt ./conda_requirements.txt $HOME/mnt/
 
 # openmpi-bin/libopenmpi-dev are for mpi4py, i.e. parallel processing/logging
 # locales is for syncing time in container with host computer
@@ -53,15 +54,22 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     libnvinfer-plugin6=6.0.1-1+cuda${CUDA} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o miniconda.sh \
-    && chown $HOST_USER:$HOST_GID ./miniconda.sh  
+    && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
+    && chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ \
+    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && locale-gen
+    
+# Avoid Python 3 errors regarding ASCII/UTF-8 
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
 
-USER $HOST_USER
+USER ${HOST_USER}
+
+WORKDIR /home/${HOST_USER}/mnt
 
 RUN /bin/bash ./miniconda.sh -bp ${CONDA_DIR} \
     && rm miniconda.sh
-
-COPY --chown=$HOST_USER ./conda_requirements.txt ./conda_requirements.txt
 
 RUN conda config --system --prepend channels conda-forge \
     && conda config --system --prepend channels anaconda \
@@ -70,9 +78,8 @@ RUN conda config --system --prepend channels conda-forge \
     && conda install --quiet --yes conda="${CONDA_VERSION%.*}.*" \
     && conda install --yes --file conda_requirements.txt \
     && conda update --all --quiet --yes \
-    && conda clean --all -f -y 
-
-COPY --chown=$HOST_USER ./pip_requirements.txt ./pip_requirements.txt
+    && conda clean --all -f -y \
+    && rm conda_requirements.txt
 
 RUN pip install --upgrade pip \
     && pip install --user -r pip_requirements.txt --no-cache-dir \
