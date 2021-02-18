@@ -41,4 +41,13 @@ alias mlenv-gpu-attach="docker run \
     bpoole908/mlenv-gpu:$version \
     && docker attach mlenv-gpu-tmp "
 
-alias  mlenv-gpu-stop="docker stop mlenv-gpu"
+alias wsl-mlenv-gpu-make="docker run \
+    --volume=$path:/home/dev/mnt \
+    --volume=/etc/localtime:/etc/localtime:ro \
+    --name mlenv-gpu \
+    --user $user \
+    --gpus 1 \
+    -dit \
+    -p 8888:8888 \
+    -p 6006:6006 \
+    bpoole908/mlenv-gpu:$version"

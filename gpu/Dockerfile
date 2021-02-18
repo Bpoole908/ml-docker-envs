@@ -1,8 +1,8 @@
 # Do not change CUDA and CUDNN versions unless you confirm they are compatible
 # with the TensorFlow version in use. 
 ARG UBUNTU_VERSION=18.04
-ARG CUDA=10.1
-ARG CUDNN=7
+ARG CUDA=11.0
+ARG CUDNN=8
 
 # Nvidia refernce Dockerfiles (in template format ;_;): https://gitlab.com/nvidia/container-images/cuda/-/tree/master/
 FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU_VERSION}
@@ -49,9 +49,9 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     libgconf-2-4 \
     libxtst6 \
     gcc \
-    libnvinfer6=6.0.1-1+cuda${CUDA} \
-    libnvinfer-dev=6.0.1-1+cuda${CUDA} \
-    libnvinfer-plugin6=6.0.1-1+cuda${CUDA} \
+    libnvinfer7=7.1.3-1+cuda${CUDA} \
+    libnvinfer-dev=7.1.3-1+cuda${CUDA} \
+    libnvinfer-plugin7=7.1.3-1+cuda${CUDA} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
