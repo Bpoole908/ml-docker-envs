@@ -1,0 +1,10 @@
+numpy
+pandas
+mpi4py
+matplotlib
+seaborn
+jupyterlab
+scipy
+scikit-learn
+tensorboard
+jupyter_contrib_nbextensions

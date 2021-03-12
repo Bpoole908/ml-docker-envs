@@ -1,0 +1,6 @@
+opencv
+pytorch 
+torchvision 
+torchaudio 
+fastai
+nbdev

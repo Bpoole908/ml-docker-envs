@@ -4,7 +4,8 @@ ARG UBUNTU_VERSION=18.04
 ARG CUDA=11.0
 ARG CUDNN=8
 
-# Nvidia refernce Dockerfiles (in template format ;_;): https://gitlab.com/nvidia/container-images/cuda/-/tree/master/
+# Nvidia refernce Dockerfiles (in template format ;_;): 
+# https://gitlab.com/nvidia/container-images/cuda/-/tree/master/
 FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU_VERSION}
 
 ARG CUDA
@@ -27,13 +28,10 @@ RUN groupadd -r ${HOST_USER} \
     && useradd -d /home/${HOST_USER} -g ${HOST_GID} -m -r -u ${HOST_UID} ${HOST_USER} \
     && mkdir ${HOME}/mnt/ 
 
-COPY ./pip_requirements.txt ./conda_requirements.txt $HOME/mnt/
-
 # openmpi-bin/libopenmpi-dev are for mpi4py, i.e. parallel processing/logging
 # locales is for syncing time in container with host computer
 # libgtk2.0-0/xvfb/ is used for graphical interfaces if a $DISPLAY is passed to the container
 # gcc is for compiling C/C++
-# libnvinfer is for installing TensorRT, which requires libcudnn7.
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     vim \
     ssh \
@@ -49,20 +47,29 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     libgconf-2-4 \
     libxtst6 \
     gcc \
-    libnvinfer7=7.1.3-1+cuda${CUDA} \
-    libnvinfer-dev=7.1.3-1+cuda${CUDA} \
-    libnvinfer-plugin7=7.1.3-1+cuda${CUDA} \
+    ruby-full \
+    build-essential \
+    zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
-    && chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen
-    
+
 # Avoid Python 3 errors regarding ASCII/UTF-8 
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
+
+COPY ./pip_requirements.txt ./conda_requirements.txt $HOME/mnt/
+
+# Install Jekyll and CHOWN everything inside ${HOME}/mnt/ to $USER
+RUN echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc \
+    && echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc \
+    && echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc \
+    && /bin/bash -c "source ~/.bashrc" \
+    && gem install jekyll bundler \
+    && chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
 
 USER ${HOST_USER}
 
@@ -73,11 +80,11 @@ RUN /bin/bash ./miniconda.sh -bp ${CONDA_DIR} \
 
 RUN conda config --system --prepend channels conda-forge \
     && conda config --system --prepend channels anaconda \
+    && conda config --system --prepend channels pytorch \
+    && conda config --system --prepend channels fastai \
     && conda config --system --set auto_update_conda false \
     && conda config --system --set show_channel_urls true  \
-    && conda install --quiet --yes conda="${CONDA_VERSION%.*}.*" \
     && conda install --yes --file conda_requirements.txt \
-    && conda update --all --quiet --yes \
     && conda clean --all -f -y \
     && rm conda_requirements.txt
 
