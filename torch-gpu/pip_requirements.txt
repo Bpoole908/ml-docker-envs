@@ -3,8 +3,10 @@ pandas
 mpi4py
 matplotlib
 seaborn
-jupyterlab
 scipy
 scikit-learn
 tensorboard
+jupyterlab
 jupyter_contrib_nbextensions
+pillow
+pyyaml

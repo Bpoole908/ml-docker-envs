@@ -46,10 +46,6 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     xvfb \
     libgconf-2-4 \
     libxtst6 \
-    gcc \
-    ruby-full \
-    build-essential \
-    zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
@@ -64,12 +60,14 @@ ENV LC_ALL=en_US.UTF-8 \
 COPY ./pip_requirements.txt ./conda_requirements.txt $HOME/mnt/
 
 # Install Jekyll and CHOWN everything inside ${HOME}/mnt/ to $USER
-RUN echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc \
-    && echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc \
-    && echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc \
-    && /bin/bash -c "source ~/.bashrc" \
-    && gem install jekyll bundler \
-    && chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
+# RUN echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc \
+#     && echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc \
+#     && echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc \
+#     && /bin/bash -c "source ~/.bashrc" \
+#     && gem install jekyll bundler \
+#     && chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
+
+RUN chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
 
 USER ${HOST_USER}
 
