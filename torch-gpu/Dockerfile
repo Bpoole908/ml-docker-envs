@@ -6,16 +6,16 @@ ARG CUDNN=8
 
 # Nvidia refernce Dockerfiles (in template format ;_;): 
 # https://gitlab.com/nvidia/container-images/cuda/-/tree/master/
-FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU_VERSION}
+FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-runtime-ubuntu${UBUNTU_VERSION}
 
 ARG CUDA
 ARG HOST_USER="dev"
 ARG HOST_UID="1000"
 ARG HOST_GID="100"
 
+#  Conda relases: https://repo.anaconda.com/miniconda/
 ENV HOME=/home/${HOST_USER} \
-    MINICONDA_VERSION=4.6.14 \
-    CONDA_VERSION=4.6.14 \
+    MINICONDA_VERSION=py38_4.9.2 \
     CONDA_DIR=/home/$HOST_USER/miniconda \
     USER=$HOST_USER \
     UID=$HOST_UID \ 
@@ -31,7 +31,6 @@ RUN groupadd -r ${HOST_USER} \
 # openmpi-bin/libopenmpi-dev are for mpi4py, i.e. parallel processing/logging
 # locales is for syncing time in container with host computer
 # libgtk2.0-0/xvfb/ is used for graphical interfaces if a $DISPLAY is passed to the container
-# gcc is for compiling C/C++
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     vim \
     ssh \
@@ -48,7 +47,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     libxtst6 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
+    && curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen
 
@@ -57,7 +56,7 @@ ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
 
-COPY ./pip_requirements.txt ./conda_requirements.txt $HOME/mnt/
+COPY ./environment.yml $HOME/mnt/
 
 # Install Jekyll and CHOWN everything inside ${HOME}/mnt/ to $USER
 # RUN echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc \
@@ -76,19 +75,16 @@ WORKDIR /home/${HOST_USER}/mnt
 RUN /bin/bash ./miniconda.sh -bp ${CONDA_DIR} \
     && rm miniconda.sh
 
-RUN conda config --system --prepend channels conda-forge \
-    && conda config --system --prepend channels anaconda \
-    && conda config --system --prepend channels pytorch \
-    && conda config --system --prepend channels fastai \
-    && conda config --system --set auto_update_conda false \
-    && conda config --system --set show_channel_urls true  \
-    && conda install --yes --file conda_requirements.txt \
+RUN conda update conda -y \
+    && conda env create --file environment.yml \
     && conda clean --all -f -y \
-    && rm conda_requirements.txt
+    && rm environment.yml
 
-RUN pip install --upgrade pip \
-    && pip install --user -r pip_requirements.txt --no-cache-dir \
-    && rm pip_requirements.txt
+RUN conda init bash \
+    && /bin/bash -c "source ~/.bashrc" \
+    && /bin/bash -c "source activate mlenv" \
+    && echo 'conda activate mlenv' >> ~/.bashrc 
+
 
 RUN echo 'export PS1="🐳 \[\033[1;36m\]\u@\[\033[1;32m\]\h:\[\033[1;34m\]\w\[\033[0m\]\$ "' >> ${HOME}/.bashrc
 

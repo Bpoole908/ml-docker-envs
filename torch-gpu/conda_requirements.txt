@@ -1,4 +1,0 @@
-opencv
-pytorch 
-fastai
-nbdev

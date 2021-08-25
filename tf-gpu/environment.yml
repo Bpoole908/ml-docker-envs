@@ -1,0 +1,21 @@
+name: mlenv
+channels:
+  - conda-forge
+  - anaconda
+dependencies:
+  - python=3.8 
+  - pip
+  - conda-forge::opencv
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - conda-forge::jupyterlab
+  - conda-forge::jupyter_contrib_nbextensions
+  - scipy
+  - scikit-learn
+  - conda-forge::mpi4py
+  - conda-forge::dill
+  - conda-forge::psutil
+  - pip:
+    - -r pip_requirements.txt

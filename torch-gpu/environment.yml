@@ -1,0 +1,30 @@
+name: mlenv
+channels:
+  - conda-forge
+  - anaconda
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.8
+  - pip
+  - pytorch::pytorch
+  - conda-forge::pytorch-lightning=1.4.4
+  - conda-forge::torchvision
+  - conda-forge::opencv
+  - pyyaml
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - conda-forge::jupyterlab
+  - conda-forge::jupyter_contrib_nbextensions
+  - scipy
+  - scikit-learn
+  - conda-forge::pillow
+  - conda-forge::mpi4py
+  - conda-forge::tensorboard
+  - conda-forge::dill
+  - conda-forge::psutil
+  - conda-forge::rich
+  - pip:
+    - hydra-core
