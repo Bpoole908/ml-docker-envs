@@ -1,7 +1,7 @@
 # Do not change CUDA and CUDNN versions unless you confirm they are compatible
 # with the TensorFlow version in use. 
 ARG UBUNTU_VERSION=18.04
-ARG CUDA=11.0
+ARG CUDA=11.3.0
 ARG CUDNN=8
 
 # Nvidia refernce Dockerfiles (in template format ;_;): 
@@ -84,7 +84,6 @@ RUN conda init bash \
     && /bin/bash -c "source ~/.bashrc" \
     && /bin/bash -c "source activate mlenv" \
     && echo 'conda activate mlenv' >> ~/.bashrc 
-
 
 RUN echo 'export PS1="🐳 \[\033[1;36m\]\u@\[\033[1;32m\]\h:\[\033[1;34m\]\w\[\033[0m\]\$ "' >> ${HOME}/.bashrc
 

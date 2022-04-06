@@ -1,25 +1,22 @@
+# Installing torch through conda env will not work will installing cudatoolkit at the same time
 name: mlenv
 channels:
   - conda-forge
-  - anaconda
   - pytorch
-  - nvidia
 dependencies:
   - python=3.8
   - pip
-  - pytorch::pytorch
-  - conda-forge::pytorch-lightning=1.4.4
-  - conda-forge::torchvision
+  - conda-forge::cudatoolkit=11.3
   - conda-forge::opencv
-  - pyyaml
-  - numpy
-  - pandas
-  - matplotlib
-  - seaborn
+  - conda-forge::pyyaml
+  - conda-forge::numpy
+  - conda-forge::pandas
+  - conda-forge::matplotlib
+  - conda-forge::seaborn
   - conda-forge::jupyterlab
   - conda-forge::jupyter_contrib_nbextensions
-  - scipy
-  - scikit-learn
+  - conda-forge::scipy
+  - conda-forge::scikit-learn
   - conda-forge::pillow
   - conda-forge::mpi4py
   - conda-forge::tensorboard
@@ -27,4 +24,6 @@ dependencies:
   - conda-forge::psutil
   - conda-forge::rich
   - pip:
+    - torch
+    - torchvision
     - hydra-core
