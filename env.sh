@@ -1,5 +1,5 @@
 user="1000:10"
-version="latest"
+version="tf"
 path=$PWD
 
 while getopts u:v:p: option

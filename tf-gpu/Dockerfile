@@ -1,7 +1,7 @@
 # Do not change CUDA and CUDNN versions unless you confirm they are compatible
 # with the TensorFlow version in use. 
 ARG UBUNTU_VERSION=18.04
-ARG CUDA=11.0
+ARG CUDA=11.4.0
 ARG CUDNN=8
 
 # Nvidia refernce Dockerfiles (in template format ;_;): https://gitlab.com/nvidia/container-images/cuda/-/tree/master/
@@ -45,8 +45,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     xvfb \
     libgconf-2-4 \
     libxtst6 \
-    libnvinfer7=7.1.3-1+cuda${CUDA} \
-    libnvinfer-plugin7=7.1.3-1+cuda${CUDA} \
+    libnvinfer8=8.2.3-1+cuda11.4 \
+    libnvinfer-plugin8=8.2.3-1+cuda11.4 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
@@ -58,7 +58,7 @@ ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
 
-COPY ./pip_requirements.txt ./environment.yml $HOME/mnt/
+COPY ./environment.yml $HOME/mnt/
 
 RUN chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
 
@@ -72,8 +72,7 @@ RUN /bin/bash ./miniconda.sh -bp ${CONDA_DIR} \
 RUN conda update conda -y \
     && conda env create --file environment.yml \
     && conda clean --all -f -y \
-    && rm environment.yml \
-    && rm pip_requirements.txt
+    && rm environment.yml
 
 # Adding conda activate mlenv doesn't work!
 RUN conda init bash \

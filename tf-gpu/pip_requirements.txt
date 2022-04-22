@@ -1,2 +1,0 @@
-tensorflow-gpu==2.4.1
-tensorboard
