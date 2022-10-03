@@ -1,0 +1,25 @@
+name: mlenv
+channels:
+  - conda-forge
+  - anaconda
+dependencies:
+  - python=3.8 
+  - pip
+  - conda-forge::opencv
+  - conda-forge::pyyaml
+  - conda-forge::numpy
+  - conda-forge::pandas
+  - conda-forge::matplotlib
+  - conda-forge::seaborn
+  - conda-forge::jupyterlab
+  - conda-forge::jupyter_contrib_nbextensions
+  - conda-forge::scipy
+  - conda-forge::scikit-learn=1.0.2
+  # Sklearn depend
+  - libgcc
+  - conda-forge::mpi4py
+  - conda-forge::dill
+  - conda-forge::psutil
+  - pip:
+    - tensorflow
+    - tensorboard

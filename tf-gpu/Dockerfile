@@ -31,7 +31,10 @@ RUN groupadd -r ${HOST_USER} \
 # locales is for syncing time in container with host computer
 # libgtk2.0-0/xvfb/ is used for graphical interfaces if a $DISPLAY is passed to the container
 # libnvinfer is for installing TensorRT, which requires libcudnn7.
+# g++ and cmake for wider package compatibility 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
+    g++ \
+    cmake\ 
     vim \
     ssh \
     git \ 

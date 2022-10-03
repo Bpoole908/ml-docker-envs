@@ -51,6 +51,40 @@ alias mlenv-gpu-attach="docker run \
     bpoole908/mlenv-gpu:$version \
     && docker attach mlenv-gpu-${version}-tmp"
 
+alias mlenv-make="docker run \
+    --volume=$path:/home/dev/mnt \
+    --volume=/tmp/.X11-unix:/tmp/.X11-unix \
+    --volume=/etc/localtime:/etc/localtime:ro \
+    --name mlenv \
+    --user $user \
+    --shm-size 16G \
+    -dit \
+    -e DISPLAY \
+    -e XAUTHORITY \
+    -p 8888:8888 \
+    -p 6006:6006 \
+    -p 6886:6886 \
+    -p 8000:8000 \
+    bpoole908/mlenv:$version"
+
+alias mlenv-attach="docker run \
+     --volume=$path:/home/dev/mnt \
+    --volume=/tmp/.X11-unix:/tmp/.X11-unix \
+    --volume=/etc/localtime:/etc/localtime:ro \
+    --rm \
+    --name mlenv-${version}-tmp \
+    --user $user \
+    --shm-size 16G \
+    -dit \
+    -e DISPLAY \
+    -e XAUTHORITY \
+    -p 8888:8888 \
+    -p 6006:6006 \
+    -p 6886:6886 \
+    -p 8000:8000 \
+    bpoole908/mlenv:$version \
+    && docker attach mlenv-${version}-tmp"
+
 alias wsl-mlenv-gpu-make="docker run \
     --volume=$path:/home/dev/mnt \
     --volume=/etc/localtime:/etc/localtime:ro \
