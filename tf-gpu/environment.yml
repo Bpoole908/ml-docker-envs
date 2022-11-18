@@ -3,8 +3,13 @@ channels:
   - conda-forge
   - anaconda
 dependencies:
-  - python=3.8 
+  - python=3.9
   - pip
+  - conda-forge::gxx_linux-64
+  - conda-forge::cmake
+  - conda-forge::make
+  - conda-forge::libstdcxx-ng
+  - conda-forge::importlib_metadata
   - conda-forge::cudatoolkit
   - conda-forge::opencv
   - conda-forge::pyyaml
@@ -24,3 +29,4 @@ dependencies:
   - pip:
     - tensorflow-gpu
     - tensorboard
+    - hydra-core

@@ -3,10 +3,18 @@ name: mlenv
 channels:
   - conda-forge
   - pytorch
+  - nvidia
 dependencies:
-  - python=3.8
+  - python=3.9
   - pip
-  - conda-forge::cudatoolkit=11.3
+  - pytorch::pytorch
+  - pytorch::torchvision
+  - pytorch-cuda=11.7
+  - conda-forge::gxx_linux-64
+  - conda-forge::cmake
+  - conda-forge::make
+  - conda-forge::libstdcxx-ng
+  - conda-forge::importlib_metadata
   - conda-forge::opencv
   - conda-forge::pyyaml
   - conda-forge::numpy
@@ -20,10 +28,6 @@ dependencies:
   - conda-forge::pillow
   - conda-forge::mpi4py
   - conda-forge::tensorboard
-  - conda-forge::dill
   - conda-forge::psutil
-  - conda-forge::rich
   - pip:
-    - torch
-    - torchvision
     - hydra-core

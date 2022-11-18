@@ -1,7 +1,7 @@
 # Do not change CUDA and CUDNN versions unless you confirm they are compatible
 # with the TensorFlow version in use. 
-ARG UBUNTU_VERSION=18.04
-ARG CUDA=11.3.0
+ARG UBUNTU_VERSION=20.04
+ARG CUDA=11.7.0
 ARG CUDNN=8
 
 # Nvidia refernce Dockerfiles (in template format ;_;): 
@@ -19,7 +19,8 @@ ENV HOME=/home/${HOST_USER} \
     CONDA_DIR=/home/$HOST_USER/miniconda \
     USER=$HOST_USER \
     UID=$HOST_UID \ 
-    GID=$HOST_GID
+    GID=$HOST_GID \
+    TZ='America/New_York'
 
 # PATH must have be on its own line or CONDA_DIR will not be recognized
 ENV PATH=${CONDA_DIR}/bin:${HOME}/.local/bin:${PATH}
@@ -31,7 +32,7 @@ RUN groupadd -r ${HOST_USER} \
 # openmpi-bin/libopenmpi-dev are for mpi4py, i.e. parallel processing/logging
 # locales is for syncing time in container with host computer
 # libgtk2.0-0/xvfb/ is used for graphical interfaces if a $DISPLAY is passed to the container
-RUN apt-get update && apt-get install -yq --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     vim \
     ssh \
     git \ 
@@ -43,28 +44,21 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     openmpi-bin \
     libgtk2.0-0 \
     xvfb \
+    locales \
     libgconf-2-4 \
     libxtst6 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
-    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
     && locale-gen
-
+    
 # Avoid Python 3 errors regarding ASCII/UTF-8 
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
+    LANGUAGE=en_US:en
 
 COPY ./environment.yml $HOME/mnt/
-
-# Install Jekyll and CHOWN everything inside ${HOME}/mnt/ to $USER
-# RUN echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc \
-#     && echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc \
-#     && echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc \
-#     && /bin/bash -c "source ~/.bashrc" \
-#     && gem install jekyll bundler \
-#     && chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
 
 RUN chown -R ${HOST_USER}:${HOST_GID} ${HOME}/mnt/ 
 

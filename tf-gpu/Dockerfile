@@ -18,7 +18,8 @@ ENV HOME=/home/${HOST_USER} \
     CONDA_DIR=/home/$HOST_USER/miniconda \
     USER=$HOST_USER \
     UID=$HOST_UID \ 
-    GID=$HOST_GID
+    GID=$HOST_GID \
+    TZ='America/New_York'
 
 # PATH must have be on its own line or CONDA_DIR will not be recognized
 ENV PATH=${CONDA_DIR}/bin:${HOME}/.local/bin:${PATH}
@@ -32,7 +33,7 @@ RUN groupadd -r ${HOST_USER} \
 # libgtk2.0-0/xvfb/ is used for graphical interfaces if a $DISPLAY is passed to the container
 # libnvinfer is for installing TensorRT, which requires libcudnn7.
 # g++ and cmake for wider package compatibility 
-RUN apt-get update && apt-get install -yq --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     g++ \
     cmake\ 
     vim \
@@ -53,13 +54,13 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -o $HOME/mnt/miniconda.sh \
-    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
     && locale-gen
     
 # Avoid Python 3 errors regarding ASCII/UTF-8 
 ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
+    LANGUAGE=en_US:en
 
 COPY ./environment.yml $HOME/mnt/
 
