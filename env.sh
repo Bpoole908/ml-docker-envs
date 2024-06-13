@@ -1,5 +1,5 @@
 user="1000:10"
-version="tf"
+version="bare-cuda12.2"
 path=$PWD
 
 while getopts u:v:p: option
